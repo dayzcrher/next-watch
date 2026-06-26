@@ -11,11 +11,7 @@
   <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEwOCIgZmlsbD0iIzFCMUExRiIvPgogIDx0ZXh0IHg9IjE1NSIgeT0iMzU1IiBmb250LWZhbWlseT0iT3N3YWxkLCBzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iNjAwIiBmb250LXNpemU9IjI4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzVCQjhGRiI+TjwvdGV4dD4KICA8dGV4dCB4PSIzNjAiIHk9IjI1NSIgZm9udC1mYW1pbHk9Ik9zd2FsZCwgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjYwMCIgZm9udC1zaXplPSIxNTUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNFRkU4RDgiIGxldHRlci1zcGFjaW5nPSIyIj5FWFQ8L3RleHQ+CiAgPHRleHQgeD0iMzY1IiB5PSIzMzUiIGZvbnQtZmFtaWx5PSJPc3dhbGQsIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI0MDAiIGZvbnQtc2l6ZT0iNjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2QjY1NzciIGxldHRlci1zcGFjaW5nPSIxMCI+d2F0Y2g8L3RleHQ+Cjwvc3ZnPgo="/>
   <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgcng9IjEwOCIgZmlsbD0iIzFCMUExRiIvPgogIDx0ZXh0IHg9IjE1NSIgeT0iMzU1IiBmb250LWZhbWlseT0iT3N3YWxkLCBzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iNjAwIiBmb250LXNpemU9IjI4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzVCQjhGRiI+TjwvdGV4dD4KICA8dGV4dCB4PSIzNjAiIHk9IjI1NSIgZm9udC1mYW1pbHk9Ik9zd2FsZCwgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjYwMCIgZm9udC1zaXplPSIxNTUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiNFRkU4RDgiIGxldHRlci1zcGFjaW5nPSIyIj5FWFQ8L3RleHQ+CiAgPHRleHQgeD0iMzY1IiB5PSIzMzUiIGZvbnQtZmFtaWx5PSJPc3dhbGQsIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI0MDAiIGZvbnQtc2l6ZT0iNjAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiM2QjY1NzciIGxldHRlci1zcGFjaW5nPSIxMCI+d2F0Y2g8L3RleHQ+Cjwvc3ZnPgo="/>
   <title>NEXT watch</title>
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    html,body{background:#1B1A1F;height:100%;width:100%;overflow:hidden;}
-    #root{height:100%;width:100%;background:#1B1A1F;}
-  </style>
+  <style>*{margin:0;padding:0;box-sizing:border-box}html,body{background:#1B1A1F;height:100%;width:100%;overflow:hidden;}#root{height:100%;width:100%;background:#1B1A1F;}</style>
 </head>
 <body>
   <div id="root"></div>
@@ -136,7 +132,7 @@ function AuthScreen({ onAuth }) {
   const [value, setValue] = useState("");
   const [code, setCode] = useState("");
   const [signInId, setSignInId] = useState(null);
-  const [isPhone, setIsPhone] = useState(false);
+  const [phoneMode, setPhoneMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [animOut, setAnimOut] = useState(false);
@@ -149,7 +145,7 @@ function AuthScreen({ onAuth }) {
       const result = await clerkSendCode(v);
       if (result.ok && result.signInId) {
         setSignInId(result.signInId);
-        setIsPhone(result.isPhone || false);
+        setPhoneMode(result.isPhone || false);
         setStep("code");
       } else {
         setError("couldn't send code — check your email or phone");
@@ -163,7 +159,7 @@ function AuthScreen({ onAuth }) {
     if (c.length < 4) { setError("enter the code from your email or phone"); return; }
     setLoading(true); setError("");
     try {
-      const result = await clerkVerifyCode(signInId, c, isPhone);
+      const result = await clerkVerifyCode(signInId, c, phoneMode);
       if (!result) { setError("wrong code — try again"); return; }
       const userId = result.created_session_id || result.id || signInId;
       try {
